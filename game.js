@@ -5,13 +5,16 @@ let spriteLoadCount = 0;
 let spriteFiles = ["scraper.png", "bg0.png"];
 let gameInterval;
 
-let scraper = {
-	pos: new Point(0, 0),
-	vel: new Point(1, 0)
-};
+let scraper = new Scraper();
 let wps = [
-	[new Point(0, 113), new Point(103, 113), new Point(208, 149), new Point(280, 149), new Point(320, 120)]
+	[new Point(0, 113), new Point(103, 113), new Point(208, 149), new Point(254, 149), new Point(275, 102), new Point(320, 96)]
 ];
+let controls = {
+	up: 0,
+	down: 0,
+	left: 0,
+	right: 0,
+};
 function testBoi() {
 	console.log(dePointPolygon(new Point(20, 113), wps[0]));
 	console.log(deDiscsPolygons([cD(20, 113, 0)], wps));
@@ -53,21 +56,10 @@ let imda = generateDistImdata();
 
 function gameStep() {
 	//console.log(res[0]);
-	let bp = scraper.pos.clone();
-	for (let i = 0; i < 8; ++i) {
-		scraper.pos.addeq(scraper.vel.mul(.125));
-		let ds = [cD(scraper.pos.x + 20, scraper.pos.y + 60 - 7.5, 7.5)];
-		let res = deDiscsPolygons(ds, wps);
-		if (res[0] < 0 && res[2] != 0) {
-			let waveborn = nmResPolygons(res, wps);
-			scraper.pos.addeq(waveborn.mul(res[0]));
-		}
-	}
-	scraper.vel = scraper.pos.sub(bp);
-	scraper.vel.y += 0.25;
-	//ctx.drawImage(sprites[1], 0, 0);
-	ctx.putImageData(imda, 0, 0);
-	ctx.drawImage(sprites[0], Math.round(scraper.pos.x), Math.round(scraper.pos.y));
+	scraper.move(controls);
+	ctx.drawImage(sprites[1], 0, 0);
+	//ctx.putImageData(imda, 0, 0);
+	scraper.draw(ctx);
 }
 
 function gameStart() {
@@ -93,4 +85,24 @@ canvas.addEventListener("click", function(e) {
 	let x = (e.clientX - rect.x) * canvas.width / rect.width;
 	let y = (e.clientY - rect.y) * canvas.height / rect.height;
 	console.log(x, y);
+}, false);
+
+function keyHandler(e, b) {
+	if (e.key == "ArrowUp") {
+		controls.up = b;
+	} else if (e.key == "ArrowDown") {
+		controls.down = b;
+	} else if (e.key == "ArrowLeft") {
+		controls.left = b;
+	} else if (e.key == "ArrowRight") {
+		controls.right = b;
+	}
+}
+
+addEventListener("keydown", function(e) {
+	keyHandler(e, true);
+}, false);
+
+addEventListener("keyup", function(e) {
+	keyHandler(e, false);
 }, false);
