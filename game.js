@@ -2,10 +2,11 @@ let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let sprites = [];
 let spriteLoadCount = 0;
-let spriteFiles = ["scraper.png", "bg0.png"];
+let spriteFiles = ["scraper.png", "bg0.png", "res.png"];
 let gameInterval;
 
-let scraper = new Scraper();
+let scraper = new Res();
+let camera = new Point(50, 0);
 let wps = [
 	[new Point(0, 113), new Point(103, 113), new Point(208, 149), new Point(254, 149), new Point(275, 102), new Point(320, 96)]
 ];
@@ -56,10 +57,12 @@ let imda = generateDistImdata();
 
 function gameStep() {
 	//console.log(res[0]);
-	scraper.move(controls);
-	ctx.drawImage(sprites[1], 0, 0);
+	scraper.move();
+	scraper.controlTick(controls);
+	camera.x = Math.round(scraper.pos.x + 20) - 160;
+	ctx.drawImage(sprites[1], -camera.x, -camera.y);
 	//ctx.putImageData(imda, 0, 0);
-	scraper.draw(ctx);
+	scraper.draw(ctx, camera);
 }
 
 function gameStart() {
@@ -84,7 +87,7 @@ canvas.addEventListener("click", function(e) {
 	let rect = canvas.getBoundingClientRect();
 	let x = (e.clientX - rect.x) * canvas.width / rect.width;
 	let y = (e.clientY - rect.y) * canvas.height / rect.height;
-	console.log(x, y);
+	console.log(x + camera.x, y + camera.y);
 }, false);
 
 function keyHandler(e, b) {
