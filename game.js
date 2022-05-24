@@ -8,7 +8,8 @@ let gameInterval;
 let scraper = new Res();
 let camera = new Point(50, 0);
 let wps = [
-	[new Point(0, 113), new Point(103, 113), new Point(208, 149), new Point(254, 149), new Point(275, 102), new Point(320, 96)]
+	[new Point(0, 113), new Point(103, 113), new Point(208, 149), new Point(254, 149), new Point(275, 102), new Point(320, 96), new Point(403, 150), new Point(464, 134), new Point(516, 156), new Point(545, 125), new Point(613, 132), new Point(625, 80), new Point(594, 24), new Point(547, 38), new Point(517, 0)],
+	[new Point(389, 0), new Point(316, 25), new Point(231, 13), new Point(153, 38), new Point(112, 1)]
 ];
 let controls = {
 	up: 0,
@@ -58,7 +59,7 @@ let imda = generateDistImdata();
 function gameStep() {
 	//console.log(res[0]);
 	scraper.move();
-	scraper.controlTick(controls);
+	scraper.tick(controls);
 	camera.x = Math.round(scraper.pos.x + 20) - 160;
 	ctx.drawImage(sprites[1], -camera.x, -camera.y);
 	//ctx.putImageData(imda, 0, 0);
@@ -99,6 +100,8 @@ function keyHandler(e, b) {
 		controls.left = b;
 	} else if (e.key == "ArrowRight") {
 		controls.right = b;
+	} else if (e.key == "z") {
+		controls.a = b;
 	}
 }
 

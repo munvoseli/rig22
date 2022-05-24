@@ -20,6 +20,16 @@ Point.prototype.addeq = function(p) {
 	this.y += p.y;
 };
 
+Point.prototype.mag = function() {
+	return Math.sqrt(this.x ** 2 + this.y ** 2);
+};
+
+Point.prototype.normeq = function() {
+	let d = Math.sqrt(this.x ** 2 + this.y ** 2);
+	this.x /= d;
+	this.y /= d;
+};
+
 Point.prototype.sub = function(p) {
 	return new Point(this.x - p.x, this.y - p.y);
 };

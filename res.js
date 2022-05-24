@@ -42,6 +42,12 @@ function drawSpriteFacing(pos, sprite, right, ctx, camera) {
 function Res() {
 	this.pos = new Point(30, 0);
 	this.vel = new Point(0, 0);
+	this.hook = {
+		status: 0, // 0: not out, 1: thrown, 2: caught
+		length: 0,
+		pos: new Point(0,0),
+		vel: new Point(0,0)
+	};
 	this.onGround = false;
 	this.faceRight = true;
 	this.right = true;
@@ -68,13 +74,55 @@ Res.prototype.controlTick = function(controls) {
 		else if (this.vel.x > -maxv)
 			this.vel.x = -maxv;
 	} else {
-		this.vel.x *= 0.8;
+		if (this.onGround)
+			this.vel.x *= 0.8;
 	}
 	if (controls.up && this.onGround) {
 		this.vel.y = -5;
 	}
+	if (controls.a) {
+		if (this.hook.status == 0) {
+			this.hook.pos.x = this.pos.x + 6;
+			this.hook.pos.y = this.pos.y + 12;
+			this.hook.vel.x = this.vel.x;
+			this.hook.vel.y = -5;
+			this.hook.status = 1;
+		} else if (this.hook.status == 2) {
+			this.hook.status = 0;
+			controls.a = false;
+		}
+	}
+};
+
+Res.prototype.tick = function(controls) {
+	this.controlTick(controls);
+	if (this.hook.status == 1) {
+		this.hook.pos.addeq(this.hook.vel);
+		let d = deDiscsPolygons([cD(this.hook.pos.x, this.hook.pos.y, 0)], wps)[0];
+		if (d < 0) {
+			this.hook.status = 2;
+			this.hook.length = (this.hook.pos.x - this.pos.x - 6) ** 2 + (this.hook.pos.y - this.pos.y - 12) ** 2;
+		}
+	} else if (this.hook.status == 2) {
+		let diff = this.pos.sub(this.hook.pos);
+		diff.x += 6;
+		diff.y += 12;
+		let dh = diff.x ** 2 + diff.y ** 2;
+		dh -= this.hook.length;
+		if (dh > 0) {
+			diff.normeq();
+			this.vel.addeq(diff.mul(-dh / 10000));
+		}
+	}
 };
 
 Res.prototype.draw = function(ctx, camera) {
+	if (this.hook.status != 0) {
+		ctx.beginPath();
+		ctx.moveTo(this.pos.x - camera.x + 6, this.pos.y - camera.y + 12);
+		ctx.lineTo(this.hook.pos.x - camera.x, this.hook.pos.y - camera.y);
+		ctx.stroke();
+		ctx.closePath();
+	}
 	drawSpriteFacing(this.pos, sprites[2], this.faceRight, ctx, camera);
 };
