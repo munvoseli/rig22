@@ -16,6 +16,8 @@ let controls = {
 	down: 0,
 	left: 0,
 	right: 0,
+	a: 0,
+	b: 0,
 };
 function testBoi() {
 	console.log(dePointPolygon(new Point(20, 113), wps[0]));
@@ -102,6 +104,8 @@ function keyHandler(e, b) {
 		controls.right = b;
 	} else if (e.key == "z") {
 		controls.a = b;
+	} else if (e.key == "x") {
+		controls.b = b;
 	}
 }
 

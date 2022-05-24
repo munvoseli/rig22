@@ -84,13 +84,17 @@ Res.prototype.controlTick = function(controls) {
 		if (this.hook.status == 0) {
 			this.hook.pos.x = this.pos.x + 6;
 			this.hook.pos.y = this.pos.y + 12;
-			this.hook.vel.x = this.vel.x;
-			this.hook.vel.y = -5;
+			this.hook.vel.x = this.vel.x * 2;
+			this.hook.vel.y = -10;
 			this.hook.status = 1;
+			controls.a = false;
 		} else if (this.hook.status == 2) {
 			this.hook.status = 0;
 			controls.a = false;
 		}
+	}
+	if (controls.b) {
+		this.hook.length = (Math.sqrt(this.hook.length) - 1) ** 2;
 	}
 };
 
@@ -102,16 +106,18 @@ Res.prototype.tick = function(controls) {
 		if (d < 0) {
 			this.hook.status = 2;
 			this.hook.length = (this.hook.pos.x - this.pos.x - 6) ** 2 + (this.hook.pos.y - this.pos.y - 12) ** 2;
+			this.vel.addeq(this.hook.pos.sub(this.pos).sub(new Point(6, 12)).norm());
 		}
+		this.hook.vel.y += 0.5;
 	} else if (this.hook.status == 2) {
 		let diff = this.pos.sub(this.hook.pos);
 		diff.x += 6;
 		diff.y += 12;
-		let dh = diff.x ** 2 + diff.y ** 2;
-		dh -= this.hook.length;
-		if (dh > 0) {
-			diff.normeq();
-			this.vel.addeq(diff.mul(-dh / 10000));
+		let m = diff.mag2();
+		if (m > this.hook.length) {
+			//let diff2 = diff.norm().mul(this.hook.length);
+			
+			this.vel.addeq(diff.mul(Math.sqrt(this.hook.length / m) - 1));
 		}
 	}
 };

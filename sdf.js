@@ -21,13 +21,22 @@ Point.prototype.addeq = function(p) {
 };
 
 Point.prototype.mag = function() {
-	return Math.sqrt(this.x ** 2 + this.y ** 2);
+	return Math.sqrt(this.mag2());
+};
+
+Point.prototype.mag2 = function() {
+	return this.x ** 2 + this.y ** 2;
 };
 
 Point.prototype.normeq = function() {
 	let d = Math.sqrt(this.x ** 2 + this.y ** 2);
 	this.x /= d;
 	this.y /= d;
+};
+
+Point.prototype.norm = function() {
+	let d = Math.sqrt(this.x ** 2 + this.y ** 2);
+	return new Point(this.x / d, this.y / d);
 };
 
 Point.prototype.sub = function(p) {
